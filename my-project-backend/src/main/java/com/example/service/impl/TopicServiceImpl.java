@@ -350,7 +350,7 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
         if (!textLimitCheck(JSONObject.parseObject(vo.getContent()), 2000)) {
             return "Too much content. Fail to send";
         }
-        String key = Const.FORUM_TOPIC_CREATE_COUNTER + uid;
+        String key = Const.FORUM_TOPIC_COMMENT_COUNTER + uid;
         if (!flowUtils.limitPeriodCounterCheck(key, 2, 60)) {
             return "Too many requests. Fail to send";
         }
