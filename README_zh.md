@@ -210,3 +210,56 @@ pnpm dev  # 或 npm run dev / yarn dev
 ## 📜 许可证
 
 MIT（或按需更换）
+
+## 数据库：开箱即用的结构与示例数据（`test.sql`）
+
+我们提供了可直接导入的 MySQL 数据文件：**[`test.sql`](sandbox:/mnt/data/test.sql)**。
+导入后会自动创建核心表（账号、话题、图片、互动等），并写入少量演示数据（如话题类型、示例用户；用户密码为 **bcrypt 哈希**）。
+
+### 文件内容
+
+* 表：`db_account`、`db_account_details`、`db_account_privacy`、`db_image_store`、`db_notification`、`db_topic`、`db_topic_comment`、`db_topic_interact_collect`、`db_topic_interact_like`、`db_topic_type`。
+* 种子数据：若干用户（**哈希密码**）、预置话题类型、图片与话题示例记录等。（不知道明文密码没关系，直接通过 **注册接口** 新建用户，或使用 **重置密码** 流程。）
+
+### 导入方法
+
+**方式 A — MySQL 命令行（本地 MySQL，数据库名 `test`）**
+
+```bash
+# 如未创建库，先创建
+mysql -uroot -p -h 127.0.0.1 -P 3306 -e "CREATE DATABASE IF NOT EXISTS test DEFAULT CHARACTER SET utf8mb4"
+
+# 导入
+mysql -uroot -p -h 127.0.0.1 -P 3306 test < test.sql
+```
+
+**方式 B — Docker Compose（若 MySQL 跑在容器里）**
+
+```bash
+# 将 test.sql 拷入容器（示例容器名：mysql）
+docker cp test.sql mysql:/test.sql
+
+# 在容器内执行导入
+docker exec -i mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" test < /test.sql'
+```
+
+> 该文件默认使用数据库 **`test`**。若需更换库名，可在导入前 `USE your_db;`，或在连接 URL 中改为你的库名。
+
+### 后端数据源配置（示例）
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=UTC&characterEncoding=utf8
+    username: root
+    password: your_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+```
+
+### 说明
+
+* **密码均为 bcrypt 哈希**；请通过 **注册接口** 创建自己的账号，或通过 **重置密码** 设置新密码。
+* 示例用户名/邮箱仅供开发环境使用，**切勿** 用于生产。
+* 用户名/邮箱存在唯一约束；如与现有数据冲突，请清理或修改示例数据后再导入。
+
+---
