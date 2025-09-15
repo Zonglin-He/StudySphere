@@ -213,4 +213,56 @@ pnpm dev  # or npm run dev / yarn dev
 
 MIT (or your choice)
 
+
+## Database: Ready-made schema & seed (`test.sql`)
+
+We provide a MySQL dump you can import to get a working schema and some sample data right away: **[`test.sql`](sandbox:/mnt/data/test.sql)**.
+It creates core tables (accounts, topics, images, interactions, etc.) and inserts minimal seed rows (e.g., topic types, a few demo users with **bcrypt-hashed** passwords).&#x20;
+
+### What’s inside
+
+* Tables: `db_account`, `db_account_details`, `db_account_privacy`, `db_image_store`, `db_notification`, `db_topic`, `db_topic_comment`, `db_topic_interact_collect`, `db_topic_interact_like`, `db_topic_type`.
+* Seeds: a few users (passwords are **hashed**), predefined topic types and demo records for images/topics. (If you don’t know the plaintext passwords, just **register a new user** via the API or use the reset-password flow.)&#x20;
+
+### How to import
+
+**Option A — MySQL CLI (local MySQL running, DB name: `test`)**
+
+```bash
+# create database if needed
+mysql -uroot -p -h 127.0.0.1 -P 3306 -e "CREATE DATABASE IF NOT EXISTS test DEFAULT CHARACTER SET utf8mb4"
+
+# import
+mysql -uroot -p -h 127.0.0.1 -P 3306 test < test.sql
+```
+
+**Option B — Docker Compose (if your MySQL runs in Docker)**
+
+```bash
+# copy test.sql into the container (example container name: mysql)
+docker cp test.sql mysql:/test.sql
+
+# import from inside container
+docker exec -i mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" test < /test.sql'
+```
+
+> The dump assumes schema name **`test`**. If you use a different schema, either `USE your_db;` before importing or rename in your connection URL.
+
+### Backend datasource config (example)
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=UTC&characterEncoding=utf8
+    username: root
+    password: your_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+```
+
+### Notes
+
+* **Passwords are bcrypt hashes**; use the **register** API to create your own login or use the **reset** flow to set a new password.&#x20;
+* Sample emails/usernames are **for development only**—do not reuse in production.
+* Unique constraints exist on usernames/emails; clear or change seeds if they conflict in your environment.&#x20;
+
 ---
