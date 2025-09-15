@@ -1,47 +1,49 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { useDark, useToggle } from '@vueuse/core'
+import {onMounted, provide, ref} from "vue";
+import {isUnauthorized} from "@/net";
+import {apiUserInfo} from "@/net/api/user";
+import {apiForumTypes} from "@/net/api/forum";
+import {useStore} from "@/store";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import en from "element-plus/es/locale/lang/en";
+
+useDark({
+  selector: 'html',
+  attribute: 'class',
+  valueDark: 'dark',
+  valueLight: 'light'
+})
+
+useDark({
+  onChanged(dark) { useToggle(dark) }
+})
+
+const loading = ref(false)
+const store = useStore()
+provide('userLoading', loading)
+
+onMounted(() => {
+    if(!isUnauthorized()) {
+        apiUserInfo(loading)
+    }
+    // Only load forum types if backend is available
+    if(!isUnauthorized()) {
+        apiForumTypes(data => store.forum.types = data)
+    }
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <el-config-provider :locale="en">
+      <div class="wrapper">
+          <router-view/>
+      </div>
+  </el-config-provider>
 </template>
 
 <style scoped>
-header {
+.wrapper {
   line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
 }
 </style>

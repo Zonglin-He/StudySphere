@@ -1,0 +1,66 @@
+server:
+  port: 80
+
+springdoc:
+  api-docs:
+    enabled: false
+
+# 可保留；若不想在生产打印 SQL，可删掉下面这个 mybatis-plus 块
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+spring:
+  mail:
+    host: smtp.163.com
+    username: 13325744856@163.com
+    password: SKsRABSk997n7XhS
+    port: 465
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  security:
+    filter:
+      order: -100
+    jwt:
+      key: abcdefghijk
+      expire: 7
+
+  web:
+    verify:
+      mail-limit: 60
+    flow:
+      period: 3
+      limit: 50
+      block: 30
+    cors:
+      origin: '*'
+      credentials: false
+      methods: '*'
+
+  minio:
+    endpoint: 'http://localhost:9000'
+    username: 'minioadmin'
+    password: 'StrongPassw0rd!'
+
+  weather:
+    key: ad4395f106234352855ae89861543a9c
+
+logging:
+  level:
+    org.springframework.amqp.rabbit.listener: INFO
+    org.springframework.mail: INFO

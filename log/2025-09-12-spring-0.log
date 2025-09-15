@@ -1,0 +1,31 @@
+2025-09-12 15:00:55.234  INFO 32280 --- [restartedMain] (system) c.example.MyProjectBackendApplication    : Starting MyProjectBackendApplication using Java 24.0.2 with PID 32280 (C:\Users\25011\Desktop\my-project\my-project-backend\target\classes started by 25011 in C:\Users\25011\Desktop\my-project)
+2025-09-12 15:00:55.235  INFO 32280 --- [restartedMain] (system) c.example.MyProjectBackendApplication    : The following 1 profile is active: "dev"
+2025-09-12 15:00:55.273  INFO 32280 --- [restartedMain] (system) .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-09-12 15:00:55.273  INFO 32280 --- [restartedMain] (system) .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-09-12 15:00:56.677  INFO 32280 --- [restartedMain] (system) .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-12 15:00:56.678  INFO 32280 --- [restartedMain] (system) .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-09-12 15:00:56.704  INFO 32280 --- [restartedMain] (system) .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11 ms. Found 0 Redis repository interfaces.
+2025-09-12 15:00:57.375  INFO 32280 --- [restartedMain] (system) o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-09-12 15:00:57.387  INFO 32280 --- [restartedMain] (system) o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-12 15:00:57.387  INFO 32280 --- [restartedMain] (system) o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-09-12 15:00:57.424  INFO 32280 --- [restartedMain] (system) o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-12 15:00:57.425  INFO 32280 --- [restartedMain] (system) w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2151 ms
+2025-09-12 15:00:58.311  INFO 32280 --- [restartedMain] (system) com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-12 15:00:58.546  INFO 32280 --- [restartedMain] (system) com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4f12912c
+2025-09-12 15:00:58.547  INFO 32280 --- [restartedMain] (system) com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-12 15:00:58.581  INFO 32280 --- [restartedMain] (system) com.example.config.MinioConfiguration    : Init minio client
+2025-09-12 15:00:58.689  WARN 32280 --- [restartedMain] (system) c.b.m.core.metadata.TableInfoHelper      : Can not find table primary key in Class: "com.example.entity.dto.StoreImage".
+2025-09-12 15:00:58.690  WARN 32280 --- [restartedMain] (system) c.b.m.core.injector.DefaultSqlInjector   : class com.example.entity.dto.StoreImage ,Not found @TableId annotation, Cannot use Mybatis-Plus 'xxById' Method.
+2025-09-12 15:00:58.772  INFO 32280 --- [restartedMain] (system) r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name accountServiceImpl
+2025-09-12 15:00:59.076  INFO 32280 --- [restartedMain] (system) m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3bbac555
+2025-09-12 15:00:59.226  INFO 32280 --- [restartedMain] (system) o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-09-12 15:00:59.297  INFO 32280 --- [restartedMain] (system) o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-09-12 15:00:59.299  INFO 32280 --- [restartedMain] (system) o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [localhost:5672]
+2025-09-12 15:00:59.350  INFO 32280 --- [restartedMain] (system) o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#4bbe51b7:0/SimpleConnection@e6733f7 [delegate=amqp://admin@127.0.0.1:5672/, localPort=52551]
+2025-09-12 15:00:59.380  INFO 32280 --- [restartedMain] (system) c.example.MyProjectBackendApplication    : Started MyProjectBackendApplication in 4.696 seconds (process running for 5.71)
+2025-09-12 15:01:09.121  INFO 32280 --- [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-2] (system) o.s.a.r.l.SimpleMessageListenerContainer : Waiting for workers to finish.
+2025-09-12 15:01:09.391  INFO 32280 --- [org.springframework.amqp.rabbit.RabbitListenerEndpointContainer#0-2] (system) o.s.a.r.l.SimpleMessageListenerContainer : Successfully waited for workers to finish.
+2025-09-12 15:01:09.393  INFO 32280 --- [SpringApplicationShutdownHook] (system) o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-12 15:01:09.397  INFO 32280 --- [tomcat-shutdown] (system) o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-12 15:01:09.449  INFO 32280 --- [SpringApplicationShutdownHook] (system) com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-12 15:01:09.457  INFO 32280 --- [SpringApplicationShutdownHook] (system) com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

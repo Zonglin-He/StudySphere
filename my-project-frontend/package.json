@@ -2,21 +2,35 @@
   "name": "my-project-frontend",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.18"
+    "@element-plus/icons-vue": "^2.3.2",
+    "@vueup/vue-quill": "^1.2.0",
+    "@vueuse/core": "^10.3.0",
+    "axios": "^1.4.0",
+    "element-plus": "^2.11.2",
+    "pinia": "^2.1.6",
+    "quill-delta-to-html": "^0.12.1",
+    "quill-image-resize-vue": "^1.0.4",
+    "quill-image-super-solution-module": "^2.0.1",
+    "qweather-icons": "^1.8.0",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "vite": "^7.0.6",
-    "vite-plugin-vue-devtools": "^8.0.0"
-  }
+    "@vitejs/plugin-vue": "^4.2.3",
+    "less": "^4.2.0",
+    "unplugin-auto-import": "^0.15.2",
+    "unplugin-vue-components": "^0.24.1",
+    "vite": "^4.4.6"
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite.",
+  "main": "vite.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
