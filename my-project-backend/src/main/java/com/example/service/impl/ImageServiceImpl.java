@@ -96,7 +96,7 @@ public class ImageServiceImpl extends ServiceImpl<ImageStoreMapper, StoreImage> 
     private void deleteOldAvatar(String avatar) throws Exception {
         if (avatar == null || avatar.isEmpty()){return;}
         RemoveObjectArgs remove = RemoveObjectArgs.builder()
-                .bucket("test")
+                .bucket("study")
                 .object(avatar)
                 .build();
         client.removeObject(remove);
