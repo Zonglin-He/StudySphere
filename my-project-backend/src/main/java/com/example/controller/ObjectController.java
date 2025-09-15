@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @Slf4j
@@ -25,22 +26,28 @@ public class ObjectController {
 
     private void fetchImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String imagePath = request.getServletPath().substring(7);
-        ServletOutputStream stream = response.getOutputStream();
-        if (imagePath.length() <= 13) {
-            stream.println(RestBean.failure(404, "Not fount").toString());
-        }else {
-                try{
+        try (ServletOutputStream stream = response.getOutputStream()) {
+            if (imagePath.length() <= 13) {
+                response.setStatus(404);
+                response.setContentType("application/json");
+                stream.write(RestBean.failure(404, "Not found").asJsonString().getBytes(StandardCharsets.UTF_8));
+                stream.flush();
+            } else {
+                try {
                     service.fetchImageFromMinio(stream, imagePath);
                     response.setHeader("Cache-Control", "max-age=2592000");
                     response.setHeader("Content-Type", "image/jpg");
-                }catch (ErrorResponseException e){
-                    if(e.response().code() == 404){
+                } catch (ErrorResponseException e) {
+                    if (e.response().code() == 404) {
                         response.setStatus(404);
-                    }
-                    else{
+                        response.setContentType("application/json");
+                        stream.write(RestBean.failure(404, "Not found").asJsonString().getBytes(StandardCharsets.UTF_8));
+                    } else {
                         log.error("Error while fetching image from Minio", e.getMessage(), e);
                     }
+                    stream.flush();
                 }
+            }
         }
     }
 }
