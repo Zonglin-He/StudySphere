@@ -87,8 +87,9 @@ navigator.geolocation.getCurrentPosition(position => {
     weather.success = true
   })
 }, {
-  timeout: 3000,
-  enableHighAccuracy: true
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 60000
 })
 
 onMounted(() => {
