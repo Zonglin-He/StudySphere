@@ -4,7 +4,7 @@
 
 ## Overview
 
-StudySphere is a full-stack learning/forum application. **Backend:** Spring Boot + MyBatis-Plus + Redis + JWT + RabbitMQ + MinIO. **Frontend:** Vue 3 + Element Plus. It ships with auth (register/login/reset), verification codes, request tracing, rate limiting, and OpenAPI docs.
+StudySphere is a full-stack learning/forum application. **Backend:** Spring Boot + MyBatis-Plus + Maven + Redis + JWT + RabbitMQ + MinIO + MySQL. **Frontend:** Vue 3 + Element Plus. It ships with auth (register/login/reset), verification codes, request tracing, rate limiting, and OpenAPI docs.
 
 ## ✨ Features
 
