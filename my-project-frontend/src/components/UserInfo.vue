@@ -69,29 +69,44 @@ function userLogout() {
 
 <style scoped>
 .user-info {
-  width: 320px;
+  width: 100%;
   display: flex;
-  gap: 20px;
+  gap: 18px;
   justify-content: flex-end;
   align-items: center;
+  color: inherit;
+
+  .el-avatar {
+    box-shadow: 0 12px 24px rgba(58, 78, 110, 0.22);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
   .el-avatar:hover {
     cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 30px rgba(58, 78, 110, 0.28);
   }
 
   .profile {
     text-align: right;
 
     :first-child {
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 17px;
+      font-weight: 600;
       line-height: 20px;
+      letter-spacing: 0.3px;
     }
 
     :last-child {
-      font-size: 10px;
-      color: grey;
+      font-size: 11px;
+      color: rgba(86, 96, 112, 0.85);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
     }
   }
+}
+
+.dark .user-info .profile :last-child {
+  color: rgba(194, 203, 226, 0.85);
 }
 </style>
