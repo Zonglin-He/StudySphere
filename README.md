@@ -211,7 +211,7 @@ pnpm dev  # or npm run dev / yarn dev
 
 ## 📜 License
 
-MIT (or your choice)
+MIT
 
 
 ## Database: Ready-made schema & seed (`test.sql`)
