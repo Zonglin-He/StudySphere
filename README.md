@@ -63,41 +63,44 @@ study-sphere/
 * **Node.js 18+**, pnpm/npm/yarn
 * **Services**: Redis, RabbitMQ, MinIO
 
-## 🐳 Quick Start (Dependencies via Docker)
+## 🐳 Docker All-in-One Deployment
 
-Create a `docker-compose.yml` and run the services:
+The repo already contains a production-ready `docker-compose.yml`, multi-stage Dockerfiles for both apps, and a custom Nginx config. Follow these steps to launch everything:
 
-```yaml
-version: "3.9"
-services:
-  redis:
-    image: redis:7
-    ports: [ "6379:6379" ]
+1. **Install Docker**: use [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Compose v2) or Docker Engine + Compose.
+2. **Clone the project**:
+   ```bash
+   git clone https://github.com/xxx/StudySphere.git
+   cd StudySphere
+   ```
+3. **(Optional) tweak config**:
+   * The backend reads connection details from `SPRING_` / `APP_` environment variables defined in `docker-compose.yml`. Adjust credentials, ports, or bucket names there if needed.
+   * The frontend build consumes `my-project-frontend/.env.production` and proxies every API call to `/api`. Edit the file if you need a different base path before building.
+   * Update the bind-mounted `./data/**` directories if you want persistent volumes in a custom location.
+4. **Start everything** (the first run builds the frontend/backend images automatically):
+   ```bash
+   docker compose up -d --build
+   ```
+   Compose will spin up MySQL, Redis, RabbitMQ, MinIO, the Spring Boot backend, and the Nginx-hosted frontend.
+5. **Verify containers**:
+   ```bash
+   docker compose ps
+   docker compose logs -f backend   # backend logs
+   docker compose logs -f frontend  # Nginx/frontend logs
+   ```
+6. **Entry points**:
+   * Frontend → `http://localhost:5173`
+   * Backend & Swagger → `http://localhost:8080/swagger-ui/index.html`
+   * RabbitMQ UI → `http://localhost:15672` (admin/admin)
+   * MinIO console → `http://localhost:9001` (minioadmin/minioadmin)
+7. **Stop / rebuild**:
+   ```bash
+   docker compose down            # stop containers
+   docker compose down -v         # stop and remove volumes (wipe data)
+   docker compose up -d --build   # rebuild & restart
+   ```
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports: [ "5672:5672", "15672:15672" ]
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
-
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    ports: [ "9000:9000", "9001:9001" ]
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - ./data/minio:/data
-```
-
-Run:
-
-```bash
-docker compose up -d
-# MinIO console → http://localhost:9001  (user/pass: minioadmin / minioadmin)
-```
+> Tip: import `test.sql` into MySQL after the first startup to create an admin account. You can append additional `SPRING_` or `APP_` variables under `backend.environment` if you need to override more Spring Boot settings.
 
 ## 🔐 Configuration
 
