@@ -7,7 +7,7 @@ import { createPinia } from "pinia";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import '@/assets/quill.css'
 
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const app = createApp(App)
 

@@ -8,17 +8,32 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: test
+      TZ: Asia/Shanghai
+    command: ["mysqld","--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci"]
     ports:
       - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL","mysqladmin ping -h 127.0.0.1 -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   redis:
     image: redis:7
     container_name: studysphere-redis
     restart: unless-stopped
+    command: ["redis-server","--appendonly","yes"]
     ports:
       - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -27,9 +42,15 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
+      TZ: Asia/Shanghai
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD","rabbitmq-diagnostics","-q","ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
 
   minio:
     image: minio/minio:latest
@@ -39,6 +60,7 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      TZ: Asia/Shanghai
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -57,7 +79,7 @@ services:
       - minio
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123456
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -69,14 +91,16 @@ services:
       APP_MINIO_USERNAME: minioadmin
       APP_MINIO_PASSWORD: minioadmin
     ports:
-      - "8080:80"
+      - "8080:8080"   # 统一保持后端用 8080
 
   frontend:
     build:
       context: ./my-project-frontend
+      args:
+        VITE_API_BASE: /api      # 构建期注入，让前端走反代
     container_name: studysphere-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "5173:80"
+      - "5173:80"     # 浏览器访问 http://localhost:5173
