@@ -35,10 +35,13 @@ public class ForumController {
 
     @GetMapping("/weather")
     public RestBean<WeatherVO> weather(double longitude, double latitude){
-        WeatherVO vo = service.fetchWeather(longitude, latitude);
-        return vo == null?
-                RestBean.failure(400, "Fail to get position and weather. Please contact the administrator"
-                ) : RestBean.success(vo);
+        double lon = new java.math.BigDecimal(longitude).setScale(2, java.math.RoundingMode.HALF_UP).doubleValue();
+        double lat = new java.math.BigDecimal(latitude ).setScale(2, java.math.RoundingMode.HALF_UP).doubleValue();
+
+        WeatherVO vo = service.fetchWeather(lon, lat);
+        return vo == null
+                ? RestBean.failure(400, "Fail to get position and weather. Please contact the administrator")
+                : RestBean.success(vo);
     }
 
     @GetMapping("/types")

@@ -88,9 +88,9 @@ study-sphere/
    ```
 6. **访问入口**：
    * 前端站点 → `http://localhost:5173`
-   * 后端接口/Swagger → `http://localhost:8080/swagger-ui/index.html`
-   * RabbitMQ 管理台 → `http://localhost:15672`（admin/admin）
-   * MinIO 控制台 → `http://localhost:9001`（minioadmin/minioadmin）
+   * 后端接口/Swagger → `http://localhost:18080/swagger-ui/index.html`
+   * RabbitMQ 管理台 → `http://localhost:15673`（admin/admin）
+   * MinIO 控制台 → `http://localhost:19001`（minioadmin/minioadmin）
 7. **停止/清理**：
    ```bash
    docker compose down            # 停止所有容器
@@ -108,7 +108,15 @@ study-sphere/
 spring:
   profiles:
     active: dev
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+    rabbitmq:
+      host: localhost
+      port: 5672
+      username: admin
+      password: admin
 app:
   jwt:
     secret: "CHANGE_ME_32+_CHARS"
@@ -136,16 +144,7 @@ springdoc:
   swagger-ui:
     enabled: true
 
-spring:
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin
+
 ```
 
 ### 前端（`.env.local`）

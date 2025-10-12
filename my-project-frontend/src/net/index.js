@@ -1,128 +1,150 @@
-import axios from "axios";
-import {ElMessage} from "element-plus";
-import router from "@/router";
+// src/net/index.js
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import router from '@/router'
 
-const authItemName = "authorize"
+const AUTH_KEY = 'authorize'
 
-const accessHeader = () => {
-    return {
-        'Authorization': `Bearer ${takeAccessToken()?.token}`
+// -------- helpers --------
+function normalizeBearer(token) {
+    if (!token) return ''
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`
+}
+
+function parseExpire(expire) {
+    if (typeof expire === 'number') return expire
+    if (typeof expire === 'string') {
+        const iso = expire.includes(' ') ? expire.replace(' ', 'T') : expire
+        const d = new Date(iso)
+        if (!Number.isNaN(d.getTime())) return d.getTime()
+    }
+    return 0
+}
+
+function saveAuth(remember, rawToken, expire, role) {
+    const token = normalizeBearer(rawToken)
+    const expMs = parseExpire(expire)
+    const obj = { token, expire: expMs, role }
+    const str = JSON.stringify(obj)
+    if (remember) localStorage.setItem(AUTH_KEY, str)
+    else sessionStorage.setItem(AUTH_KEY, str)
+    axios.defaults.headers.common.Authorization = token
+}
+
+function loadAuth() {
+    const str = localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY)
+    if (!str) return null
+    try {
+        const obj = JSON.parse(str)
+        if (obj.expire && Date.now() >= Number(obj.expire)) {
+            clearAuth()
+            return null
+        }
+        obj.token = normalizeBearer(obj.token)
+        return obj
+    } catch {
+        clearAuth()
+        return null
     }
 }
 
-const defaultError = (error) => {
-    console.error(error)
-    if (error.response && error.response.status) {
-        const status = error.response.status
-        if (status === 429) {
-            ElMessage.error(error.response.data.message)
-        } else {
-            ElMessage.error('An unexpected error occurred, please contact the administrator')
-        }
+function clearAuth(redirect) {
+    localStorage.removeItem(AUTH_KEY)
+    sessionStorage.removeItem(AUTH_KEY)
+    delete axios.defaults.headers.common.Authorization
+    if (redirect) router.push({ name: 'welcome-login' })
+}
+
+function authHeader() {
+    const a = loadAuth()
+    return a && a.token ? { Authorization: a.token } : {}
+}
+
+// -------- defaults --------
+function defaultError(err) {
+    console.error(err)
+    const status = err && err.response && err.response.status
+    if (status === 429) {
+        ElMessage.error(err.response.data?.message || 'Too many requests')
+    } else if (status) {
+        ElMessage.error('An unexpected error occurred, please contact the administrator')
     } else {
         ElMessage.error('Backend server is not available')
     }
 }
 
-const defaultFailure = (message, status, url) => {
+function defaultFailure(message, status, url) {
     console.warn(`Request URL: ${url}, Status Code: ${status}, Error Message: ${message}`)
     ElMessage.warning(message)
 }
 
-function takeAccessToken() {
-    const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
-    if(!str) return null
-    try {
-        const authObj = JSON.parse(str)
-        if(new Date(authObj.expire) <= new Date()) {
-            deleteAccessToken()
-            // Don't show expired message on initial load - only show when actually expired during use
-            return null
-        }
-        return authObj
-    } catch (e) {
-        // Invalid token format, clear it
-        deleteAccessToken()
-        return null
-    }
-}
-
-function storeAccessToken(remember, token, expire, role){
-    const authObj = { token, expire, role }
-    const str = JSON.stringify(authObj)
-    if(remember)
-        localStorage.setItem(authItemName, str)
-    else
-        sessionStorage.setItem(authItemName, str)
-}
-
-function deleteAccessToken(redirect = false) {
-    localStorage.removeItem(authItemName)
-    sessionStorage.removeItem(authItemName)
-    if(redirect) {
-        router.push({ name: 'welcome-login' })
-    }
-}
-
-function internalPost(url, data, headers, success, failure, error = defaultError){
-    axios.post(url, data, { headers: headers }).then(({data}) => {
-        if(data.code === 200) {
-            success(data.data)
-        } else if(data.code === 401) {
-            failure('Login session has expired, please log in again!')
-            deleteAccessToken(true)
+// -------- thin axios wrappers --------
+function _post(url, data, headers, ok, fail, err) {
+    fail = fail || defaultFailure
+    err = err || defaultError
+    axios.post(url, data, { headers }).then(({ data }) => {
+        if (data.code === 200) ok(data.data)
+        else if (data.code === 401) {
+            fail('Login session has expired, please log in again!', 401, url)
+            clearAuth(true)
         } else {
-            failure(data.message, data.code, url)
+            fail(data.message, data.code, url)
         }
-    }).catch(err => error(err))
+    }).catch(err)
 }
 
-function internalGet(url, headers, success, failure, error = defaultError){
-    axios.get(url, { headers: headers }).then(({data}) => {
-        if(data.code === 200) {
-            success(data.data)
-        } else if(data.code === 401) {
-            failure('Login session has expired, please log in again!')
-            deleteAccessToken(true)
+function _get(url, headers, ok, fail, err) {
+    fail = fail || defaultFailure
+    err = err || defaultError
+    axios.get(url, { headers }).then(({ data }) => {
+        if (data.code === 200) ok(data.data)
+        else if (data.code === 401) {
+            fail('Login session has expired, please log in again!', 401, url)
+            clearAuth(true)
         } else {
-            failure(data.message, data.code, url)
+            fail(data.message, data.code, url)
         }
-    }).catch(err => error(err))
+    }).catch(err)
 }
 
-function login(username, password, remember, success, failure = defaultFailure){
-    const params = new URLSearchParams({ username, password })
-    internalPost('/api/auth/login', params, {
+// -------- exported APIs --------
+export function login(username, password, remember, onSuccess, onFail) {
+    onFail = onFail || defaultFailure
+    // 注意：这里不要再写 /api；axios.defaults.baseURL 已经设为 '/api'
+    const body = new URLSearchParams({ username, password })
+    _post('/auth/login', body, {
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(remember, data.token, data.expire, data.role)
-        ElMessage.success(`Login successful, welcome ${data.username} to our system`)
-        success(data)
-    }, failure)
+        saveAuth(remember, data.token, data.expire, data.role)
+        ElMessage.success(`Login successful, welcome ${data.username}!`)
+        onSuccess && onSuccess(data)
+    }, onFail)
 }
 
-function post(url, data, success, failure = defaultFailure) {
-    internalPost(url, data, accessHeader() , success, failure)
+export function logout(onSuccess, onFail) {
+    onFail = onFail || defaultFailure
+    _get('/auth/logout', authHeader(), () => {
+        clearAuth()
+        ElMessage.success('Logout successful, see you again!')
+        onSuccess && onSuccess()
+    }, onFail)
 }
 
-function logout(success, failure = defaultFailure){
-    get('/api/auth/logout', () => {
-        deleteAccessToken()
-        ElMessage.success(`Logout successful, see you again!`)
-        success()
-    }, failure)
+export function post(url, data, ok, fail) {
+    _post(url, data, authHeader(), ok, fail)
 }
 
-function get(url, success, failure = defaultFailure) {
-    internalGet(url, accessHeader(), success, failure)
+export function get(url, ok, fail) {
+    _get(url, authHeader(), ok, fail)
 }
 
-function isUnauthorized() {
-    return !takeAccessToken()
+export function isUnauthorized() {
+    return !loadAuth()
 }
 
-function isRoleAdmin() {
-    return takeAccessToken()?.role === 'admin'
+export function isRoleAdmin() {
+    const a = loadAuth()
+    return a && a.role === 'admin'
 }
 
-export { post, get, login, logout, isUnauthorized, isRoleAdmin, accessHeader }
+export { authHeader as accessHeader, clearAuth as deleteAccessToken, saveAuth as storeAccessToken, loadAuth }

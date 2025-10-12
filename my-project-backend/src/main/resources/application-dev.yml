@@ -56,6 +56,7 @@ spring:
     password: ${APP_MINIO_PASSWORD:StrongPassw0rd!}
 
   weather:
+    host: https://np5khv5bmy.re.qweatherapi.com
     key: ${APP_WEATHER_KEY:ad4395f106234352855ae89861543a9c}
 
 logging:

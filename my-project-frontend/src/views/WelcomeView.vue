@@ -26,11 +26,8 @@ import bg from '@/assets/111.jpg'
 
     <section class="auth-panel">
       <div class="auth-card">
-        <router-view v-slot="{ Component }">
-          <transition name="el-fade-in-linear" mode="out-in">
-            <component :is="Component" class="auth-component"/>
-          </transition>
-        </router-view>
+        <!-- ★ 关键：用最简单的 router-view，确保子路由一定渲染 -->
+        <router-view />
       </div>
       <div class="auth-subtext">Designed for clarity, focus, and a touch of wonder.</div>
     </section>
@@ -62,23 +59,15 @@ import bg from '@/assets/111.jpg'
 }
 
 .hero-background,
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-}
+.hero-overlay { position: absolute; inset: 0; }
 
-.hero-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(125%) contrast(110%);
-  opacity: 0.35;
-}
+.hero-image { width: 100%; height: 100%; object-fit: cover; filter: saturate(125%) contrast(110%); opacity: 0.35; }
 
 .hero-overlay {
-  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.35), transparent 55%),
-              radial-gradient(circle at 80% 30%, rgba(148, 163, 255, 0.55), transparent 60%),
-              linear-gradient(120deg, rgba(15, 23, 42, 0.65), rgba(49, 46, 129, 0.55));
+  background:
+      radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.35), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(148, 163, 255, 0.55), transparent 60%),
+      linear-gradient(120deg, rgba(15, 23, 42, 0.65), rgba(49, 46, 129, 0.55));
   mix-blend-mode: lighten;
   opacity: 0.9;
 }
@@ -95,148 +84,53 @@ import bg from '@/assets/111.jpg'
 }
 
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.92);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 13px;
+  display: inline-flex; align-items: center;
+  padding: 8px 18px; border-radius: 999px;
+  background: rgba(255,255,255,0.22); color: rgba(255,255,255,0.92);
+  font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 13px;
   backdrop-filter: blur(14px);
 }
 
-.hero-title {
-  font-size: clamp(2.8rem, 3.6vw, 3.6rem);
-  font-weight: 700;
-  line-height: 1.05;
-  margin: 0;
-}
-
-.hero-description {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  max-width: 520px;
-  color: rgba(255, 255, 255, 0.82);
-  margin: 0;
-}
-
-.hero-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
+.hero-title { font-size: clamp(2.8rem, 3.6vw, 3.6rem); font-weight: 700; line-height: 1.05; margin: 0; }
+.hero-description { font-size: 1.05rem; line-height: 1.8; max-width: 520px; color: rgba(255,255,255,0.82); margin: 0; }
+.hero-features { display: flex; flex-wrap: wrap; gap: 14px; }
 .feature-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 9px 18px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  backdrop-filter: blur(16px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  display: inline-flex; align-items: center; padding: 9px 18px; border-radius: 999px;
+  background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.86); font-size: .85rem; letter-spacing: .02em;
+  backdrop-filter: blur(16px); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35);
 }
 
-.auth-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-  position: relative;
-}
-
+.auth-panel { display: flex; flex-direction: column; justify-content: center; gap: 20px; position: relative; }
 .auth-card {
-  border-radius: 32px;
-  padding: 40px 32px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+  border-radius: 32px; padding: 40px 32px;
+  background: rgba(255,255,255,0.78);
+  box-shadow: 0 30px 60px rgba(15,23,42,0.18);
   backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255,255,255,0.65);
+  /* ★ 给最小高度，避免看起来是空白 */
+  min-height: 420px;
 }
+.auth-subtext { font-size: .9rem; color: rgba(15,23,42,0.55); letter-spacing: .02em; text-align: center; }
 
-.auth-component {
-  height: 100%;
-}
-
-.auth-subtext {
-  font-size: 0.9rem;
-  color: rgba(15, 23, 42, 0.55);
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-
-.dark .welcome-container {
-  background: transparent;
-}
-
-.dark .hero-panel {
-  background: linear-gradient(150deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.94));
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.65);
-}
-
-.dark .hero-overlay {
-  opacity: 0.6;
-}
-
-.dark .feature-chip {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 255, 0.22);
-}
-
-.dark .auth-card {
-  background: rgba(17, 24, 39, 0.86);
-  border: 1px solid rgba(148, 163, 255, 0.22);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-}
-
-.dark .auth-subtext {
-  color: rgba(226, 232, 240, 0.55);
-}
+.dark .welcome-container { background: transparent; }
+.dark .hero-panel { background: linear-gradient(150deg, rgba(15,23,42,.92), rgba(30,41,59,.94)); box-shadow: 0 40px 100px rgba(0,0,0,.65); }
+.dark .hero-overlay { opacity: .6; }
+.dark .feature-chip { background: rgba(255,255,255,.12); color: rgba(255,255,255,.9); box-shadow: inset 0 0 0 1px rgba(148,163,255,.22); }
+.dark .auth-card { background: rgba(17,24,39,.86); border: 1px solid rgba(148,163,255,.22); box-shadow: 0 30px 60px rgba(0,0,0,.6); }
+.dark .auth-subtext { color: rgba(226,232,240,.55); }
 
 @media (max-width: 1440px) {
-  .welcome-container {
-    padding: 48px 48px;
-    gap: 40px;
-  }
-
-  .hero-inner {
-    padding: 64px 56px;
-  }
+  .welcome-container { padding: 48px 48px; gap: 40px; }
+  .hero-inner { padding: 64px 56px; }
 }
-
 @media (max-width: 1100px) {
-  .welcome-container {
-    grid-template-columns: 1fr;
-    padding: 48px 36px 120px;
-  }
-
-  .auth-panel {
-    max-width: 460px;
-    margin: -120px auto 0;
-  }
+  .welcome-container { grid-template-columns: 1fr; padding: 48px 36px 120px; }
+  .auth-panel { max-width: 460px; margin: -120px auto 0; }
 }
-
 @media (max-width: 720px) {
-  .welcome-container {
-    padding: 32px 24px 96px;
-  }
-
-  .hero-inner {
-    padding: 48px 32px;
-  }
-
-  .auth-panel {
-    margin-top: -96px;
-  }
-
-  .auth-card {
-    padding: 32px 24px;
-  }
+  .welcome-container { padding: 32px 24px 96px; }
+  .hero-inner { padding: 48px 32px; }
+  .auth-panel { margin-top: -96px; }
+  .auth-card { padding: 32px 24px; }
 }
 </style>

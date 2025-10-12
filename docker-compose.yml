@@ -11,7 +11,7 @@ services:
       TZ: Asia/Shanghai
     command: ["mysqld","--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci"]
     ports:
-      - "3306:3306"
+      - "13306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
     command: ["redis-server","--appendonly","yes"]
     ports:
-      - "6379:6379"
+      - "16379:6379"
     volumes:
       - ./data/redis:/data
     healthcheck:
@@ -44,8 +44,8 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
       TZ: Asia/Shanghai
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
+      - "15673:15672"
     healthcheck:
       test: ["CMD","rabbitmq-diagnostics","-q","ping"]
       interval: 10s
@@ -62,8 +62,8 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
       TZ: Asia/Shanghai
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "19000:9000"
+      - "19001:9001"
     volumes:
       - ./data/minio:/data
 
@@ -90,8 +90,10 @@ services:
       APP_MINIO_ENDPOINT: http://minio:9000
       APP_MINIO_USERNAME: minioadmin
       APP_MINIO_PASSWORD: minioadmin
+      SPRING_WEATHER_KEY: ad4395f106234352855ae89861543a9c
+      SPRING_WEATHER_HOST=https://np5khv5bmy.re.qweatherapi.com:
     ports:
-      - "8080:8080"   # 统一保持后端用 8080
+      - "18080:8080"   # 统一保持后端用 8080
 
   frontend:
     build:

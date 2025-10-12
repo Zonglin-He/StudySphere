@@ -76,28 +76,32 @@ function resetList() {
   updateList()
 }
 
-navigator.geolocation.getCurrentPosition(position => {
-  const longitude = position.coords.longitude
-  const latitude = position.coords.latitude
-  apiForumWeather(longitude, latitude, data => {
-    Object.assign(weather, data)
-    weather.success = true
-  })
-}, error => {
-  console.info(error)
-  ElMessage.warning('Location request timed out, please check network settings')
-  apiForumWeather(116.40529, 39.90499, data => {
-    Object.assign(weather, data)
-    weather.success = true
-  })
-}, {
-  timeout: 3000,
-  enableHighAccuracy: true
-})
+const to2 = (n) => Number(Number(n).toFixed(2));
+
+navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lon = to2(position.coords.longitude);
+      const lat = to2(position.coords.latitude);
+      apiForumWeather(lon, lat, (data) => {
+        Object.assign(weather, data);
+        weather.success = true;
+      });
+    },
+    (error) => {
+      console.info(error);
+      ElMessage.warning('Location request timed out, please check network settings');
+      apiForumWeather(to2(116.40529), to2(39.90499), (data) => {
+        Object.assign(weather, data);
+        weather.success = true;
+      });
+    },
+    { timeout: 3000, enableHighAccuracy: true }
+);
 
 onMounted(() => {
-  apiForumTopTopics(data => topics.top = data)
-})
+  apiForumTopTopics((data) => (topics.top = data));
+});
+
 </script>
 
 <template>

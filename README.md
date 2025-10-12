@@ -90,9 +90,9 @@ The repo already contains a production-ready `docker-compose.yml`, multi-stage D
    ```
 6. **Entry points**:
    * Frontend → `http://localhost:5173`
-   * Backend & Swagger → `http://localhost:8080/swagger-ui/index.html`
-   * RabbitMQ UI → `http://localhost:15672` (admin/admin)
-   * MinIO console → `http://localhost:9001` (minioadmin/minioadmin)
+   * Backend & Swagger → `http://localhost:18080/swagger-ui/index.html`
+   * RabbitMQ UI → `http://localhost:15673` (admin/admin)
+   * MinIO console → `http://localhost:19001` (minioadmin/minioadmin)
 7. **Stop / rebuild**:
    ```bash
    docker compose down            # stop containers
@@ -110,7 +110,15 @@ The repo already contains a production-ready `docker-compose.yml`, multi-stage D
 spring:
   profiles:
     active: dev
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+    rabbitmq:
+      host: localhost
+      port: 5672
+      username: admin
+      password: admin
 app:
   jwt:
     secret: "CHANGE_ME_32+_CHARS"
@@ -137,17 +145,6 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-
-spring:
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin
 ```
 
 ### Frontend (`.env.local`)
