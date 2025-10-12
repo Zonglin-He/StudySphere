@@ -1,0 +1,82 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: studysphere-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+  redis:
+    image: redis:7
+    container_name: studysphere-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: studysphere-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  minio:
+    image: minio/minio:latest
+    container_name: studysphere-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio:/data
+
+  backend:
+    build:
+      context: ./my-project-backend
+    container_name: studysphere-backend
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - minio
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+      SPRING_DATA_REDIS_HOST: redis
+      APP_MINIO_ENDPOINT: http://minio:9000
+      APP_MINIO_USERNAME: minioadmin
+      APP_MINIO_PASSWORD: minioadmin
+    ports:
+      - "8080:80"
+
+  frontend:
+    build:
+      context: ./my-project-frontend
+    container_name: studysphere-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
