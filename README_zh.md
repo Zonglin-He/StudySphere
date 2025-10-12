@@ -61,41 +61,44 @@ study-sphere/
 * **Node.js 18+**、pnpm/npm/yarn
 * **依赖服务**：Redis、RabbitMQ、MinIO
 
-## 🐳 快速启动（Docker 依赖）
+## 🐳 Docker 一键部署
 
-创建 `docker-compose.yml` 并启动：
+仓库已经提供完整的 `docker-compose.yml`、前后端镜像构建脚本与 Nginx 反向代理配置，按照下面步骤即可启动：
 
-```yaml
-version: "3.9"
-services:
-  redis:
-    image: redis:7
-    ports: [ "6379:6379" ]
+1. **准备环境**：安装 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 或 Docker Engine（Compose v2 已内置）。
+2. **克隆项目**：
+   ```bash
+   git clone https://github.com/xxx/StudySphere.git
+   cd StudySphere
+   ```
+3. **（可选）调整配置**：
+   * 后端默认使用 `SPRING_` 环境变量连接各依赖服务，如需修改账号密码、数据库名，可直接编辑 `docker-compose.yml` 中对应的 `environment`。
+   * 前端构建时会读取 `my-project-frontend/.env.production`，默认把所有接口代理到 `/api`，如需自定义可以修改后再构建。
+   * 如果要保留数据库/MinIO 数据，可把 `./data/**` 卷目录换成主机上固定的位置。
+4. **启动全部服务**（首次会自动构建前后端镜像）：
+   ```bash
+   docker compose up -d --build
+   ```
+   Compose 会拉起以下容器：MySQL、Redis、RabbitMQ、MinIO、后端（Spring Boot）和前端（Nginx）。
+5. **检查运行状态**：
+   ```bash
+   docker compose ps
+   docker compose logs -f backend   # 查看后端实时日志
+   docker compose logs -f frontend  # 查看前端/Nginx 日志
+   ```
+6. **访问入口**：
+   * 前端站点 → `http://localhost:5173`
+   * 后端接口/Swagger → `http://localhost:8080/swagger-ui/index.html`
+   * RabbitMQ 管理台 → `http://localhost:15672`（admin/admin）
+   * MinIO 控制台 → `http://localhost:9001`（minioadmin/minioadmin）
+7. **停止/清理**：
+   ```bash
+   docker compose down            # 停止所有容器
+   docker compose down -v         # 停止并删除卷（慎用，会清空数据）
+   docker compose up -d --build   # 重新构建并启动
+   ```
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports: [ "5672:5672", "15672:15672" ]
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
-
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    ports: [ "9000:9000", "9001:9001" ]
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - ./data/minio:/data
-```
-
-运行：
-
-```bash
-docker compose up -d
-# MinIO 控制台 → http://localhost:9001  (账号/密码: minioadmin / minioadmin)
-```
+> 提示：首次启动后可在 MySQL 中导入 `test.sql` 初始化管理员账号；后端容器默认使用 prod 配置，必要时可在 `docker-compose.yml` 的 `backend.environment` 中追加更多 `SPRING_` 或 `APP_` 变量。
 
 ## 🔐 配置
 
