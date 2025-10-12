@@ -14,24 +14,29 @@ spring:
       mail.smtp.ssl.enable: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:admin}
+    password: ${SPRING_RABBITMQ_PASSWORD:admin}
     virtual-host: /
 
   datasource:
-    url: jdbc:mysql://localhost:3306/test
-    username: root
-    password: 123456
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/test}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
 
   security:
     filter:
       order: -100
     jwt:
-      key: abcdefghijk
-      expire: 7
+      key: ${APP_SECURITY_JWT_KEY:abcdefghijk}
+      expire: ${APP_SECURITY_JWT_EXPIRE:7}
 
   web:
     verify:
@@ -46,12 +51,12 @@ spring:
       methods: '*'
 
   minio:
-    endpoint: 'http://localhost:9000'
-    username: 'minioadmin'
-    password: 'StrongPassw0rd!'
+    endpoint: ${APP_MINIO_ENDPOINT:http://localhost:9000}
+    username: ${APP_MINIO_USERNAME:minioadmin}
+    password: ${APP_MINIO_PASSWORD:StrongPassw0rd!}
 
   weather:
-    key: ad4395f106234352855ae89861543a9c
+    key: ${APP_WEATHER_KEY:ad4395f106234352855ae89861543a9c}
 
 logging:
   level:
